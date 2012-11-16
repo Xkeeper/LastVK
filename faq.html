@@ -35,8 +35,8 @@
 				<a class="brand" href="#">LastVK</a>
 				<div class="nav-collapse">
 					<ul class="nav">
-						<li class="active"><a href="/index.html">Главная</a></li>
-						<li><a href="/faq.html">FAQ</a></li>
+						<li><a href="/index.html">Главная</a></li>
+						<li class="active"><a href="./faq.html">FAQ</a></li>
 						<li><a href="/download.html">Скачать</a></li>
 						<li><a href="/contact.html">Контакты</a></li>
 					</ul>
@@ -46,39 +46,29 @@
 	</div>
 	<div id="wrapper">
 		<div class="container main">
-			<!-- Main hero unit for a primary marketing message or call to action -->
-			<div class="hero-unit">
-				<h1>Привет!</h1>
-				<p>Сколько раз при прослушивании радио LastFM тебе безумно нравился трек, но ты не знал как его скачать?
-					<br>
-					Теперь это в прошлом!
-					<br>
-					<div id="myCarousel" class="carousel slide">
-						<div class="carousel-inner">
-							<div class="item active">
-								<img src="/img/screenshots/screen1.jpg" alt="">
-								<div class="carousel-caption">
-									<h4>Все просто!</h4>
-									<p>Достаточно нажать на иконку программы и появится окошко с проигрываемой в данный
-									момент композицией на LastFM. </p>
-								</div>
-							</div>
-							<div class="item">
-								<img src="/img/screenshots/screen2.jpg" alt="">
-								<div class="carousel-caption">
-									<h4>Никакой путаницы</h4>
-									<p>Трудно держать в памяти какая музыка у тебя уже есть, поэтому LastVK заботливо
-										следит за тем, чтобы ты не скачал лишнего.</p>
-								</div>
-							</div>
-						</div>
-						<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-						<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+			<div class="row">
+				<div class="span12">
+					<abbr title="Часто задаваемые вопросы"><h1>FAQ</h1></abbr><hr>
+					<div class="well">
+						<ul>
+							<li><h4>Зачем мне вводить свой логин и пароль ВКонтакте?</h4></li>
+							<p>Данные твоего аккаунта будут использоваться для поиска музыки.</p>
+							<li><h4>А это не опасно? Как я могу быть уверен что мой аккаунт не взломают?</h4></li>
+							<p>Я приведу целых 4 пункта в пользу безопасноcти:
+								<ol>
+								<li>LastVK не сохраняет пароль на компьютере и передает его только серверу Вконтакте.</li> 
+								<li>Единственное что остается в настройках программы - <a href="http://www.wikipedia.org/wiki/HTTP_cookie">cookies</a>, точно так же, как делает это твой браузер.</li>
+								<li>Все соединения с серверами ВКонтакте устанавливаются по защищенному протоколу https, поэтому ты можешь не беспокоится что кто-то перехватит твои данные в сети.</li>
+								<li>Если я тебя еще не убедил, то рад сообщить что <a href="https://github.com/xkeeper/LastVK">исходники</a> открыты! Поэтому ты можешь самостоятельно проверить мои слова.</li>
+								</ol>
+							</p>
+							<li><h4>У меня ничего не работает!!!</h4></li>
+							<p>Да, такое бывает, звезды на небе не так сошлись, геомагнитные бури или у Паши Дурова плохое настроение, а может и правда ошибка в программе. В любом случае напиши мне и подробно опиши что у тебя случилось, я постараюсь все исправить.</p>
+							<li><h4>У меня есть интересное предложение по <s>порабощению чело...</s> улучшению LastVK, как мне с тобой связаться?</h4></li>
+							Ты всегда можешь найти мои контакты на <a href="/contact.html">этой</a> страничке.
+						</ul>
 					</div>
-					При помощи LastVK ты всегда сможешь загрузить понравившийся трек нажав всего на одну кнопку, причем абсолютно бесплатно!*
-				</p>
-				<p><a class="btn btn-info btn-large" href="/download.html">Скачать &raquo;</a></p>
-				<small>*Да-да, абсолютно бесплатно!</small>
+				</div>
 			</div>
 		</div> <!-- /container -->
 		<div id="push"></div>

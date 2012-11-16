@@ -1,0 +1,24 @@
+html, body {
+ height: 100%;
+}
+#wrapper {
+ min-height: 100%;
+ height: auto !important;
+ height: 100%;
+ margin: 0 auto -50px;
+}
+#push {
+ height: 50px;
+}
+.container .credit {
+ margin: 15px 0;
+ text-align: center;
+ font-size: 15px;
+}
+.main {
+ padding-top: 5%;
+}
+#myCarousel {
+ max-height: 515px;
+ max-width: 900px;
+}
