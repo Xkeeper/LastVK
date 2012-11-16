@@ -9,7 +9,8 @@ Works on MacOS/Windows/Linux
 - download and install [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download)
 - `pip install -r requirements.txt`
 - run `python LastVK.py`
-**NOTE** on Windows platform install packages to python install path (e.g. `C:\Python27`)
+
+**NOTE:** on Windows platform install packages to python install path (e.g. `C:\Python27`)
 
 ## Bundling :
 - download and unpack [pyinstaller](http://www.pyinstaller.org/)
