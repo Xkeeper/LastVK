@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/buttons/mainwindow">
+        <file alias="settings.png">images/buttons/settings.png</file>
+        <file alias="exit.png">images/buttons/exit.png</file>
+        <file alias="exit_on.png">images/buttons/exit_on.png</file>
+        <file alias="settings_on.png">images/buttons/settings_on.png</file>
+    </qresource>
+    <qresource prefix="/animations">
+        <file alias="loading.gif">images/animations/loading.gif</file>
+    </qresource>
+    <qresource prefix="/icons/tray">
+        <file alias="LastVK.png">images/icons/tray/LastVK.png</file>
+        <file alias="LastVK_monochrome.png">images/icons/tray/LastVK_monochrome.png</file>
+    </qresource>
+    <qresource prefix="/icons/label">
+        <file alias="ok.png">images/icons/label/ok.png</file>
+        <file alias="ok_off.png">images/icons/label/ok_off.png</file>
+    </qresource>
+    <qresource prefix="/buttons/settings">
+        <file alias="vkontakte_button.png">images/buttons/settings/vkontakte_button.png</file>
+        <file alias="lastfm_button.png">images/buttons/settings/lastfm_button.png</file>
+        <file alias="musiclib_button.png">images/buttons/settings/musiclib_button.png</file>
+    </qresource>
+</RCC>

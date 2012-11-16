@@ -1,0 +1,4 @@
+lxml==3.0.1
+mutagen==1.20
+pylast==0.5.11
+requests==0.14.1
