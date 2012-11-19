@@ -250,10 +250,15 @@ class VK:
         logger.info('getUser started')
         if not self.cookie:
             return {}
+        print self.cookie
+        userName = ''
         try:
             mainpage = requests.get("https://m.vk.com", cookies = {'remixsid': self.cookie})
             parsed = lxml.html.fromstring(mainpage.content)
-            userName = parsed.find_class("cont")[0].find('h2').text
+            for item in parsed.find_class('cont'):
+                tag = item.find('h2')
+                if tag is not None:
+                    userName = tag.text
             userAvatar = parsed.find_class('user_wrap')[0].getchildren()[0].getchildren()[0].attrib['src']
         except:
             logger.error("user details not parsed")
