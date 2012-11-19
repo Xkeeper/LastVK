@@ -69,7 +69,7 @@ class SettingsFormVK(QWidget):
             else:
                 self.updateUIuserSignal.emit(False, {})
                 self.setPreloaderStateSignal.emit(False)
-        except:
+        finally:
             self.setPreloaderStateSignal.emit(False)
 
     @pyqtSlot(bool, dict)
