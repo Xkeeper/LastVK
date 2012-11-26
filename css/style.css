@@ -22,3 +22,11 @@ html, body {
  max-height: 515px;
  max-width: 900px;
 }
+.navbar .brand {
+	padding: 8px 20px 3px;
+}
+.navbar .brand > img {
+	display: inline-block;
+	padding-bottom: 3px; 
+	margin: 0;
+}
