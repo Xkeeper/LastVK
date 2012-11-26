@@ -51,7 +51,7 @@ class SettingsFormMusicLib(QWidget):
             QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         )
         if iTunesMediaPath:
-            if self.musicLibHandle.isItunesFolder(iTunesMediaPath):
+            if self.musicLibHandle.isItunesFolder(unicode(iTunesMediaPath)):
                 self.ui.iTunesMediaPathEdit.setText(iTunesMediaPath)
             else:
                 QMessageBox.warning(self, u'Ошибка', u'Папка не является библиотекой iTunes')
