@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './src/qtui/loginVkForm.ui'
 #
-# Created: Thu Nov 15 13:45:40 2012
+# Created: Fri Nov 30 12:24:33 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!

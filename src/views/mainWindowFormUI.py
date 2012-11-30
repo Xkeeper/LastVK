@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './src/qtui/mainWindowForm.ui'
 #
-# Created: Thu Nov 15 13:45:41 2012
+# Created: Fri Nov 30 12:24:33 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,6 +66,7 @@ class Ui_MainForm(object):
         font = QtGui.QFont()
         font.setPointSize(13)
         self.downloadButton.setFont(font)
+        self.downloadButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.downloadButton.setStyleSheet(_fromUtf8(""))
         self.downloadButton.setObjectName(_fromUtf8("downloadButton"))
         self.downloadProgressBar = QtGui.QProgressBar(self.mainFrame)

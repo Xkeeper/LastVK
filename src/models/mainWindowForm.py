@@ -261,7 +261,7 @@ class MainWindowForm(QMainWindow):
         if event.type() == QEvent.WindowDeactivate:
             if QApplication.focusWidget() == self:
                 self.close()
-                return True
+            return True
         else:
             return QObject.eventFilter(self,obj, event)
 

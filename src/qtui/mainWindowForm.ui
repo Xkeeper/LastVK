@@ -86,6 +86,9 @@ border-radius: 31px;
          <pointsize>13</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
