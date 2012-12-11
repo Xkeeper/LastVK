@@ -147,9 +147,13 @@ class MainWindowForm(QMainWindow):
         else:
             recieved_bytes, filetmp_path = self.downloadHandle.downloadtemp(_song['url'])
             if filetmp_path:
-                file_tags = Tag(filetmp_path)
-                file_tags.flush_tags()
-                file_tags.set_tags(**current_track)
+                try:
+                    file_tags = Tag(filetmp_path)
+                except ValueError:
+                    pass
+                else:
+                    file_tags.flush_tags()
+                    file_tags.set_tags(**current_track)
                 song_title = u'{0} - {1}.mp3'.format(current_track['artist'], current_track['title'])
                 save_path = self.musicLibHandle.get_path()
                 if not os.path.exists(save_path):

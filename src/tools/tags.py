@@ -15,7 +15,7 @@ class Tag:
         try:
             audio = EasyID3(audio_filename)
         except:
-            pass
+            raise ValueError
         else:
             self.tags = {}
             self.tags['artist'] = audio.get('artist','Unknown')

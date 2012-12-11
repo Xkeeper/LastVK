@@ -16,7 +16,7 @@ class Downloader(QObject):
 
     def downloadfile(self, url, filename, dirname = '.', fd = None):
         chunk_size = 40960
-        file_path = dirname + '/' + filename
+        file_path = os.path.join(dirname, filename)
         file_url = urllib2.urlopen(url)
         total_size = file_url.info().getheader('Content-Length').strip()
         total_size = int(total_size)
