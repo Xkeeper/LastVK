@@ -75,6 +75,15 @@ class UserLastApi:
         if not self.user:
             return {}
         track = self.user.get_now_playing()
+        if not track:
+            recent_track = self.user.get_recent_tracks(limit=1)
+            if len(recent_track) > 0:
+                recent_track  = recent_track[0]
+                timestamp = int(recent_track.timestamp)
+                playback_date = datetime.fromtimestamp(timestamp)
+                date_diff = datetime.now() - playback_date
+                if date_diff.total_seconds() / 60 < 20:
+                    track = self.user.get_recent_tracks(limit=1)[0].track
         if track:
             playnow = {'artist': unicode(track.get_artist().get_name()),
                        'title': unicode(track.get_name())
