@@ -9,10 +9,16 @@ from tempfile import mkstemp
 
 class Downloader(QObject):
     downloadProgressSignal = pyqtSlot(int)
+
+    def __new__(cls, creator):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Downloader, cls).__new__(cls)
+            cls.instance.__init__(creator)
+        return cls.instance
+
     def __init__(self, creator):
         QObject.__init__(self)
         self._creator = creator
-
 
     def downloadfile(self, url, filename, dirname = '.', fd = None):
         chunk_size = 40960
