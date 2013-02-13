@@ -3,20 +3,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import shutil
-import os
 from src.tools.musiclib import MusicLib
-from src.tools.downloader import Downloader
-from src.tools.tags import Tag
 from src.tools.threading import GenericThread
-
 from src.views.mainWindowFormUI import Ui_MainForm
-
 from src.models.settingsFormMain import SettingsFormMain
-
 from src.lastfm.lasfmtools import UserLastApi, LastApiWSError, LastApiNetworkError
-from src.vk.vktools import VK
-
+from singletonDownloader import SingletonDownload
 
 
 class MainWindowForm(QMainWindow):
@@ -30,14 +22,14 @@ class MainWindowForm(QMainWindow):
     abortAndShowErrorSignal = pyqtSignal(unicode)
     setUpdatePlayNowIntervalSignal = pyqtSignal(int)
     updatePlayNowInterval = 15000
+
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
         self.lastFMHandle = UserLastApi()
-        self.vkHandle = VK()
         self.musicLibHandle = MusicLib()
-        self.downloadHandle = Downloader(self)
+        self.singletonDownloader = SingletonDownload(self)
         self.settings = QSettings()
         self.settings.beginGroup('app')
         self.lastFMUser = ''
@@ -62,7 +54,6 @@ class MainWindowForm(QMainWindow):
         self.updatePlayNowTimer.timeout.emit()
         self.updatePlayNowTimer.start()
         QObject.installEventFilter(self, self)
-
 
     @pyqtSlot()
     def mainthread_wrapper(self):
@@ -112,61 +103,11 @@ class MainWindowForm(QMainWindow):
             self.stopAnimationSignal.emit()
             self.setStatusLabelTextSignal.emit(u'В данный момент нет проигрываемых треков')
 
-
     @pyqtSlot(unicode)
     def abortAndShowError(self, text):
         self.stopAnimationSignal.emit()
         self.current_track = {}
         self.setStatusLabelTextSignal.emit(text)
-
-    def download_thread_func(self):
-        current_track = self.current_track
-        if not 'artist' in current_track or not 'title' in current_track:
-            return
-
-        if not self.settings.contains('userVK/cookie'):
-            self.setStatusLabelTextSignal.emit(u'Не авторизован ВКонтакте, проверьте настройки')
-            return
-
-        self.setProgressBarValueSignal.emit(5)
-        if not self.vkHandle.check_connection():
-            self.setStatusLabelTextSignal.emit(u'Не удается соединиться с сервером ВКонтакте')
-            return
-
-        _cookie = self.settings.value('userVK/cookie').toString()
-        self.vkHandle.set_cookie(_cookie)
-        if not self.vkHandle.is_logged():
-            self.setStatusLabelTextSignal.emit(u'Авторизационные данные ВКонтакте не корректны, проверьте настройки')
-            return
-
-        self.setProgressBarValueSignal.emit(10)
-        _song = self.vkHandle.search_best(current_track['artist'], current_track['title'])
-        if not _song:
-            self.setProgressBarValueSignal.emit(0)
-            self.setStatusLabelTextSignal.emit(u'Трек не найден в базе ВКонтакте')
-        else:
-            recieved_bytes, filetmp_path = self.downloadHandle.downloadtemp(_song['url'])
-            if filetmp_path:
-                try:
-                    file_tags = Tag(filetmp_path)
-                except ValueError:
-                    pass
-                else:
-                    file_tags.flush_tags()
-                    file_tags.set_tags(**current_track)
-                song_title = u'{0} - {1}.mp3'.format(current_track['artist'], current_track['title'])
-                save_path = self.musicLibHandle.get_path()
-                if not os.path.exists(save_path):
-                    os.mkdir(save_path)
-                shutil.move(filetmp_path, self.musicLibHandle.get_path() + '/' + song_title)
-                self.setProgressBarValueSignal.emit(0)
-                self.setStatusLabelTextSignal.emit(u'Загрузка файла завершена')
-                print filetmp_path
-
-            else:
-                self.setProgressBarValueSignal.emit(0)
-                self.setStatusLabelTextSignal.emit(u'Не удалось загрузить файл')
-
 
     @pyqtSlot()
     def start_animation(self):
@@ -206,11 +147,11 @@ class MainWindowForm(QMainWindow):
     def setStateAlreadyLabel(self, state):
         if state:
             pixmap = QPixmap(':/icons/label/ok.png')
-            self.ui.alreadyLabel.setPixmap(pixmap.scaled(24,24))
+            self.ui.alreadyLabel.setPixmap(pixmap.scaled(24, 24))
             self.ui.alreadyLabel.setToolTip(u'Трек уже есть в музыкальной библиотеке')
         else:
             pixmap = QPixmap(':/icons/label/ok_off.png')
-            self.ui.alreadyLabel.setPixmap(pixmap.scaled(24,24))
+            self.ui.alreadyLabel.setPixmap(pixmap.scaled(24, 24))
 
     @pyqtSlot()
     def on_settingsButton_clicked(self):
@@ -223,8 +164,8 @@ class MainWindowForm(QMainWindow):
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
-        self.download_thread = GenericThread(self.download_thread_func)
-        self.download_thread.start()
+        self.setStateDownloadButtonSignal.emit(False)
+        self.singletonDownloader.start()
 
     @pyqtSlot()
     def on_exitButton_clicked(self):
@@ -239,7 +180,7 @@ class MainWindowForm(QMainWindow):
     def on_timer_timeout(self):
         _value = self.ui.scrollArea.horizontalScrollBar().value()
         if _value >= self.__maxscroll:
-            _value = -(self.__scrollWidth)
+            _value = -self.__scrollWidth
         self.ui.scrollArea.horizontalScrollBar().setValue(_value + 3)
 
     @pyqtSlot(int)
@@ -257,7 +198,7 @@ class MainWindowForm(QMainWindow):
         self.__scrollWidth = self.ui.scrollArea.width()
         self.__maxscroll = width
         self.ui.playNowLabel.setFixedWidth(width)
-        self.ui.scrollArea.horizontalScrollBar().setMinimum(-(self.__scrollWidth))
+        self.ui.scrollArea.horizontalScrollBar().setMinimum(-self.__scrollWidth)
         self.ui.scrollArea.horizontalScrollBar().setMaximum(width)
         self.scrollLabelTimer.start()
 
@@ -267,7 +208,7 @@ class MainWindowForm(QMainWindow):
                 self.close()
             return True
         else:
-            return QObject.eventFilter(self,obj, event)
+            return QObject.eventFilter(self, obj, event)
 
     def closeEvent(self, event):
         self.updatePlayNowTimer.stop()
