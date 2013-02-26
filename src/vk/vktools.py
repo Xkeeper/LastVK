@@ -13,10 +13,12 @@ from tempfile import mkstemp
 from mutagen.mp3 import MP3
 
 # stolen and adpated from <http://stackoverflow.com/questions/7674790/bundling-data-files-with-pyinstaller-onefile>
-def resource_path(relative):
 
+
+def resource_path(relative):
     return os.path.join(getattr(sys, '_MEIPASS', os.path.abspath(".")), 'ssl',
-        relative)
+                        relative)
+
 
 os.environ['REQUESTS_CA_BUNDLE'] = resource_path('cacert.pem')
 
@@ -29,10 +31,10 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-class VK:
 
+class VK:
     songs_per_page = 10
-    headers = { 'User-Agent': 'Opera/9.80 (S60; SymbOS; Opera Mobi/499; U; ru) Presto/2.4.18 Version/10.00' }
+    headers = {'User-Agent': 'Opera/9.80 (S60; SymbOS; Opera Mobi/499; U; ru) Presto/2.4.18 Version/10.00'}
 
     #CLASS INIT
 
@@ -53,11 +55,10 @@ class VK:
             Performs a Vkontakte audio search with best bitrate and match ratio
         """
         logger.info('search best executed')
-        query  = artist + ' - ' + track
+        query = artist + ' - ' + track
         songs = self.search(query)
         if songs:
             songsBitrated = list()
-            filteredSongs = list()
             for song in songs:
                 song_artist = song['artist'].lower()
                 song_title = song['title'].lower()
@@ -77,15 +78,14 @@ class VK:
                 songBitrate = self.__get_bitrate(song['url'])
                 song['bitrate'] = songBitrate
                 song['ratio'] = average_ratio
-                if songBitrate  >= 300 and average_ratio > 0.9:
+                if songBitrate >= 300 and average_ratio > 0.9:
                     return song
                 songsBitrated.append(song)
-            songsBitrated.sort(key = self.__keysongs, reverse = True)
+            songsBitrated.sort(key=self.__keysongs, reverse=True)
             return songsBitrated[0]
 
 
-
-    def search( self, query , offset = 0 ):
+    def search( self, query, offset=0 ):
 
         """
             @type query str
@@ -96,26 +96,24 @@ class VK:
         logger.info('search executed')
         if not self.cookie:
             return None
+        offset = abs(offset)
 
-        songs = list()
-        offset = abs( offset )
+        posts = {'act': 'search', 'al': '1', 'gid': '0', 'offset': offset, 'q': query, 'sort': '2', 'count': '10'}
 
-        posts = { 'act': 'search', 'al': '1', 'gid': '0', 'offset': offset, 'q': query, 'sort': '2' , 'count': '10' }
-
-        response = requests.post( 'https://vkontakte.ru/audio', cookies = {'remixsid': self.cookie} ,
-            headers = self.headers,
-            data = posts,
-            timeout = 1500).content.decode('cp1251')
-        songs = self.parse_songs( response )
+        response = requests.post('https://vkontakte.ru/audio', cookies={'remixsid': self.cookie},
+                                 headers=self.headers,
+                                 data=posts,
+                                 timeout=1500).content.decode('cp1251')
+        songs = self.parse_songs(response)
 
         if songs:
             return songs
         return False
 
-    def parse_songs( self,  unparsed_songs ):
+    def parse_songs(self, unparsed_songs):
 
         """
-            @type hash str
+            @type unparsed_songs str
 
             Parses search results
         """
@@ -123,16 +121,16 @@ class VK:
         #pdb.set_trace()
         songs = list()
         unparsed_songs = unparsed_songs
-        unparsed_songs = re.sub(r'<!(.*)!>','',unparsed_songs)
+        unparsed_songs = re.sub(r'<!(.*)!>', '', unparsed_songs)
         unparsed_songs = lxml.html.fromstring(unparsed_songs)
         split_songs = unparsed_songs.find_class('audio fl_l')
 
         if split_songs:
-            for idx, song in enumerate( split_songs ):
+            for idx, song in enumerate(split_songs):
                 try: #some song cannot be parsed, so we need to avoid crash with try/except
                     id_tag = song.get('id')
                     audio_id = re.search(r'-?\d+_\d+', id_tag).group(0)
-                    audio_link = song.get_element_by_id('audio_info'+audio_id).value
+                    audio_link = song.get_element_by_id('audio_info' + audio_id).value
                     audio_link = audio_link.split(',')[0]
                     audio_info = song.find_class('title_wrap fl_l')[0]
                     audio_artist = audio_info.getchildren()[0].text_content()
@@ -162,11 +160,13 @@ class VK:
         """
         logger.info('get bitrate executed')
         if url:
+            audio_file_path = ''
             try:
-                audio_file_fd, audio_file_path = mkstemp(prefix = 'vkbitrate' ,suffix = '.mp3')
+                audio_file_fd, audio_file_path = mkstemp(prefix='vkbitrate', suffix='.mp3')
                 audio_file = os.fdopen(audio_file_fd, 'wb')
-                url_file = urllib2.urlopen(url, timeout = 800)
-                audio_file.write(url_file.read(50000)) #FrameSize = Bitrate * 1000/8 * SamplesPerFrame / Frequency + IsPadding * PaddingSize
+                url_file = urllib2.urlopen(url, timeout=800)
+                audio_file.write(url_file.read(
+                    50000)) #FrameSize = Bitrate * 1000/8 * SamplesPerFrame / Frequency + IsPadding * PaddingSize
                 audio_file.close()
 
                 audio = MP3(audio_file_path)
@@ -180,68 +180,67 @@ class VK:
                 return 0
 
 
-    #VKONTAKTE AUTENTICATION METHODS
+                #VKONTAKTE AUTENTICATION METHODS
 
-#    def __get_cookie( self ):
-#
-#        """
-#            Returns vkontakte cookie from file
-#        """
-#
-#        cookie = ''
-#        if os.path.exists( self.cookies_dir + 'vkcookie' ):
-#            file = open( self.cookies_dir + 'vkcookie' , 'r' )
-#            cookie = file.read()
-#            file.close()
-#        if not cookie:
-#            return False
-#        self.cookie = cookie
-#        return cookie
+            #    def __get_cookie( self ):
+            #
+            #        """
+            #            Returns vkontakte cookie from file
+            #        """
+            #
+            #        cookie = ''
+            #        if os.path.exists( self.cookies_dir + 'vkcookie' ):
+            #            file = open( self.cookies_dir + 'vkcookie' , 'r' )
+            #            cookie = file.read()
+            #            file.close()
+            #        if not cookie:
+            #            return False
+            #        self.cookie = cookie
+            #        return cookie
 
-    def set_cookie( self, cookie ):
+    def set_cookie( self, cookie):
         self.cookie = cookie
 
-#    def __auth_routine( self, email, password ):
-#
-#        """
-#            Gets new cookie from vkontakte
-#        """
-#        response = requests.post( 'http://vk.com/login.php?op=a_login_attempt&login=' + email )
-#        if not response:
-#            return False
-#        if response.content == 'vklogin':
-#            mainpage = requests.get("http://vk.com")
-#            ip_h = re.search("ip_h: '(\d|\w*)'",mainpage.content).group(1)
-#            hash = re.search("hash: '(\d|\w*)'",mainpage.content).group(1)
-#            posts = { 'act': 'login', 'q': '1',
-#                      'al_frame': '1', 'captcha_sid' : '',
-#                      'captcha_key': '', 'from_host': 'vk.com',
-#                      'from_protocol': 'http',
-#                      'email': email, 'pass': password,
-#                      'ip_h': ip_h ,'expire': '' }
-#            response = requests.post('https://login.vk.com/?act=login', posts, headers = self.headers)
-#            cookie = re.search( '([0-9a-f]){55,65}', response.headers['set-cookie'] ).group(0)
-#            return cookie
-#        response_json = json.loads(response.content) #TODO: auth with captcha
-#        return False
+    #    def __auth_routine( self, email, password ):
+    #
+    #        """
+    #            Gets new cookie from vkontakte
+    #        """
+    #        response = requests.post( 'http://vk.com/login.php?op=a_login_attempt&login=' + email )
+    #        if not response:
+    #            return False
+    #        if response.content == 'vklogin':
+    #            mainpage = requests.get("http://vk.com")
+    #            ip_h = re.search("ip_h: '(\d|\w*)'",mainpage.content).group(1)
+    #            hash = re.search("hash: '(\d|\w*)'",mainpage.content).group(1)
+    #            posts = { 'act': 'login', 'q': '1',
+    #                      'al_frame': '1', 'captcha_sid' : '',
+    #                      'captcha_key': '', 'from_host': 'vk.com',
+    #                      'from_protocol': 'http',
+    #                      'email': email, 'pass': password,
+    #                      'ip_h': ip_h ,'expire': '' }
+    #            response = requests.post('https://login.vk.com/?act=login', posts, headers = self.headers)
+    #            cookie = re.search( '([0-9a-f]){55,65}', response.headers['set-cookie'] ).group(0)
+    #            return cookie
+    #        response_json = json.loads(response.content) #TODO: auth with captcha
+    #        return False
 
-    def is_logged( self ):
+    def is_logged(self):
         """
             Return True when logged in vk.com or False if not
         """
         logger.info('is_logged started')
         if self.cookie:
-
-            mainpage = requests.get("https://m.vk.com", cookies  = {'remixsid': self.cookie} )
+            mainpage = requests.get("https://m.vk.com", cookies={'remixsid': self.cookie})
             parsed = lxml.html.fromstring(mainpage.content)
-            if parsed.find_class('user_wrap'):
+            if parsed.find_class('owner_panel'):
                 return True
         return False
 
     def check_connection(self):
         logger.info('check_connection started')
         try:
-            mainpage = requests.get("http://m.vk.com", timeout = 5)
+            mainpage = requests.get("http://m.vk.com", timeout=5)
         except requests.ConnectionError or socket.timeout:
             return False
         return True
@@ -253,13 +252,12 @@ class VK:
         print self.cookie
         userName = ''
         try:
-            mainpage = requests.get("https://m.vk.com", cookies = {'remixsid': self.cookie})
+            mainpage = requests.get("https://m.vk.com", cookies={'remixsid': self.cookie})
             parsed = lxml.html.fromstring(mainpage.content)
-            for item in parsed.find_class('cont'):
-                tag = item.find('h2')
-                if tag is not None:
-                    userName = tag.text
-            userAvatar = parsed.find_class('user_wrap')[0].getchildren()[0].getchildren()[0].attrib['src']
+            item = parsed.find_class('owner_panel')[0]
+            if item is not None:
+                userName = item.attrib['data-name']
+            userAvatar = ''
         except:
             logger.error("user details not parsed")
             return {}

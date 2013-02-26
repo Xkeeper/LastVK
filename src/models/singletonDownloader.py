@@ -68,7 +68,6 @@ class  SingletonDownload(QThread):
                         os.mkdir(save_path)
                     shutil.move(filetmp_path, self.musicLibHandle.get_path() + '/' + song_title)
                     self.creator.setStatusLabelTextSignal.emit(u'Загрузка файла завершена')
-                    print filetmp_path
 
                 else:
                     self.creator.setStatusLabelTextSignal.emit(u'Не удалось загрузить файл')
@@ -91,7 +90,6 @@ class  SingletonDownload(QThread):
             chunk = file_url.read(chunk_size)
             if not chunk:
                 if total_size == recieved_bytes:
-                    print 'done.'
                     file_data.close()
                     return recieved_bytes, file_path
                 return None
